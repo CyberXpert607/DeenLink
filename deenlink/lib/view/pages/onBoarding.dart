@@ -101,7 +101,7 @@ class _onBoardingScreen extends State<OnboardingScreen> {
               ),
               //elevated button at the bottom
               Positioned(
-                bottom: 27,
+                bottom: MediaQuery.of(context).padding.bottom + 25,
                 left: 60,
                 right: 60,
                 child: Column(
@@ -136,14 +136,15 @@ class _onBoardingScreen extends State<OnboardingScreen> {
                         ),
                       ),
                     ),
+                    
                     //Privacy and Policy text under
                     Padding(
-                      padding: EdgeInsets.symmetric(vertical: 20),
+                      padding: EdgeInsets.symmetric(vertical: 15),
                       child: RichText(
                         textAlign: TextAlign.center,
                         text: TextSpan(
                           style: TextStyle(
-                            color: Colors.grey.shade600,
+                            color: Colors.grey.shade800,
                             fontSize: 10,
                             height: 1.5,
                           ),
@@ -154,7 +155,7 @@ class _onBoardingScreen extends State<OnboardingScreen> {
                             TextSpan(
                               text: "Terms & Conditions",
                               style: TextStyle(
-                                color: Colors.green.shade700,
+                                color: Colors.green.shade800,
                                 decoration: TextDecoration.underline,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -171,7 +172,7 @@ class _onBoardingScreen extends State<OnboardingScreen> {
                             TextSpan(
                               text: "Privacy & Policy",
                               style: TextStyle(
-                                color: Colors.green.shade700,
+                                color: Colors.green.shade800,
                                 decoration: TextDecoration.underline,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -281,7 +282,7 @@ class _onBoardingScreen extends State<OnboardingScreen> {
                 ],
                 stops: const [0.0, 0.25, 0.65, 0.95],
               ),
-            ),
+            ),  
           ),
         BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),

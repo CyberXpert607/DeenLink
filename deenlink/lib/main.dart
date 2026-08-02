@@ -4,12 +4,12 @@ import 'package:flutter_ios_preview/flutter_ios_preview.dart';
 
 void main() {
   runApp(
-    const IosPreview(
+    /*const IosPreview(
       deviceModel: DeviceModel.iPhone16ProMax,
       enableInspector: false,
       child: MainApp(),
-    ),
-  );
+    ),*/
+  const MainApp());
 }
 
 class MainApp extends StatelessWidget {
