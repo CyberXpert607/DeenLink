@@ -21,7 +21,12 @@ dependencies:
   flutter_riverpod: ^2.5.1
   flutter_secure_storage: ^9.0.0
   url_launcher: ^6.3.2
-  #shared_prefrences: ^2.2.3
+  shared_preferences: ^2.5.5
+  dio: ^5.11.0
+  dio_cookie_manager: ^3.5.0
+  cookie_jar: ^4.0.9
+  path_provider: ^2.1.6
+  shimmer_animation: ^2.2.2+1
 
 dev_dependencies:
   flutter_test:

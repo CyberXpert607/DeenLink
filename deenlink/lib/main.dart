@@ -1,23 +1,37 @@
-import 'package:deenlink/view/pages/onBoarding.dart';
+import 'package:deenlink/core/router/app_router.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_ios_preview/flutter_ios_preview.dart';
+import 'package:flutter/services.dart';
+//import 'package:flutter_ios_preview/flutter_ios_preview.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shimmer/main.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   runApp(
-    /*const IosPreview(
+    /* const IosPreview(
       deviceModel: DeviceModel.iPhone16ProMax,
       enableInspector: false,
-      child: MainApp(),
+      child: ProviderScope(child: MyApp()),
     ),*/
-  const MainApp());
+    const ProviderScope(child: MyApp()),
+  );
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends ConsumerWidget {
   const MainApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
+
+    return MaterialApp.router(
+      
+      title: "DeenLink",
       theme: ThemeData(
         brightness: Brightness.light,
         colorScheme: ColorScheme.fromSeed(
@@ -35,7 +49,6 @@ class MainApp extends StatelessWidget {
       ),
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
-      home: const OnboardingScreen(),
     );
   }
 }

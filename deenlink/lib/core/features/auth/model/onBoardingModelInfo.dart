@@ -1,10 +1,8 @@
-import 'package:deenlink/core/models/onBoardingModel.dart';
+import 'package:deenlink/core/features/auth/model/onBoardingModel.dart';
 
 List<OnboardingModel> slides = [
   OnboardingModel(
     title: "Welcome to",
-    description:
-        "An All in one Islamic Application designed to help muslims practice islam efficiently and easily. Equipped with tons of models and features",
     assetPath: "assets/images/welcomeTheme.png",
     buttonText: "Continue",
     showSkipButton: false,

@@ -1,13 +1,14 @@
 import 'dart:ui';
-import 'package:deenlink/core/models/onBoardingModel.dart';
+import 'package:deenlink/core/features/auth/model/onBoardingModel.dart';
+import 'package:deenlink/core/services/onboarding_service.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:deenlink/core/models/onBoardingModelInfo.dart';
+import 'package:deenlink/core/features/auth/model/onBoardingModelInfo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:deenlink/view/pages/LoginScreen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -18,6 +19,7 @@ class OnboardingScreen extends StatefulWidget {
 
 class _onBoardingScreen extends State<OnboardingScreen> {
   int _currentPage = 0;
+  final PageController _controller = PageController();
 
   Future<void> _launch(Uri url) async {
     try {
@@ -34,17 +36,22 @@ class _onBoardingScreen extends State<OnboardingScreen> {
       }
     }
   }
+  /*
+  Future<void> _finishOnboarding() async {
+    await OnboardingService.markSeen();
 
-  void _goToNext() {
+    if(mounted) context.go('/login');
+  } 
+  let's seee whether the _goToNext() function can do the same job*/
+
+  void _goToNext() async {
     if (_currentPage < slides.length - 1) {
       setState(() {
         _currentPage++;
       });
     } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
-      );
+      await OnboardingService.markSeen();
+      if (mounted) context.go('/login');
     }
   }
 
@@ -56,7 +63,6 @@ class _onBoardingScreen extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
@@ -73,13 +79,20 @@ class _onBoardingScreen extends State<OnboardingScreen> {
           top: false,
           child: Stack(
             children: [
-              IndexedStack(
-                index: _currentPage,
-                children: slides.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final slide = entry.value;
-                  return _buildSlide(slide, index);
-                }).toList(),
+              Positioned.fill(
+                child: PageView(
+                  controller: _controller,
+                  onPageChanged: (index) {
+                    setState(() {
+                      _currentPage = index;
+                    });
+                  },
+                  children: slides.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final slide = entry.value;
+                    return _buildSlide(slide, index);
+                  }).toList(),
+                ),
               ),
               //skip button
               Positioned(
@@ -101,7 +114,9 @@ class _onBoardingScreen extends State<OnboardingScreen> {
               ),
               //elevated button at the bottom
               Positioned(
-                bottom: MediaQuery.of(context).padding.bottom + 25,
+                bottom:
+                    MediaQuery.of(context).padding.bottom +
+                    45, //take a look into this
                 left: 60,
                 right: 60,
                 child: Column(
@@ -136,66 +151,70 @@ class _onBoardingScreen extends State<OnboardingScreen> {
                         ),
                       ),
                     ),
-                    
+
                     //Privacy and Policy text under
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 15),
-                      child: RichText(
-                        textAlign: TextAlign.center,
-                        text: TextSpan(
-                          style: TextStyle(
-                            color: Colors.grey.shade800,
-                            fontSize: 10,
-                            height: 1.5,
+                    if (_currentPage == 0)
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: 15),
+                        child: RichText(
+                          textAlign: TextAlign.center,
+                          text: TextSpan(
+                            style: TextStyle(
+                              color: Colors.grey.shade900,
+                              fontSize: 10,
+                              height: 1.5,
+                            ),
+                            children: [
+                              const TextSpan(
+                                text:
+                                    'By clicking "Continue" or swiping forward, you agree to our ',
+                              ),
+                              TextSpan(
+                                text: "Terms & Conditions",
+                                style: TextStyle(
+                                  color: Colors.green.shade900,
+                                  decoration: TextDecoration.underline,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () async {
+                                    _launch(
+                                      Uri.parse(
+                                        'https://deenlink.org/terms.html',
+                                      ),
+                                    );
+                                  },
+                              ),
+                              const TextSpan(text: " and "),
+
+                              TextSpan(
+                                text: "Privacy Policy",
+                                style: TextStyle(
+                                  color: Colors.green.shade900,
+                                  decoration: TextDecoration.underline,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () async {
+                                    _launch(
+                                      Uri.parse(
+                                        "https://deenlink.org/privacy.html",
+                                      ),
+                                    );
+                                  },
+                              ),
+                              const TextSpan(text: '.'),
+                            ],
                           ),
-                          children: [
-                            const TextSpan(
-                              text: 'By clicking "Continue" you agree to our ',
-                            ),
-                            TextSpan(
-                              text: "Terms & Conditions",
-                              style: TextStyle(
-                                color: Colors.green.shade800,
-                                decoration: TextDecoration.underline,
-                                fontWeight: FontWeight.w500,
-                              ),
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () async {
-                                  _launch(
-                                    Uri.parse(
-                                      'https://deenlink.org/terms.html',
-                                    ),
-                                  );
-                                },
-                            ),
-                            const TextSpan(text: " and "),
-                            TextSpan(
-                              text: "Privacy & Policy",
-                              style: TextStyle(
-                                color: Colors.green.shade800,
-                                decoration: TextDecoration.underline,
-                                fontWeight: FontWeight.w500,
-                              ),
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () async {
-                                  _launch(
-                                    Uri.parse(
-                                      "https://deenlink.org/privacy.html",
-                                    ),
-                                  );
-                                },
-                            ),
-                            const TextSpan(text: '.'),
-                          ],
                         ),
                       ),
-                    ),
                   ],
                 ),
               ),
+
               if (_currentPage > 0)
                 Positioned(
-                  top: MediaQuery.of(context).padding.top + 16,
+                  top: MediaQuery.of(context).padding.top + 20,
                   left: 20,
                   child: Container(
                     width: 44,
@@ -216,9 +235,12 @@ class _onBoardingScreen extends State<OnboardingScreen> {
                         size: 20,
                       ),
                       onPressed: () {
-                        setState(() {
-                          _currentPage--;
-                        });
+                        if (_controller.page != null && _controller.page! > 0) {
+                          _controller.previousPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        }
                       },
                       splashRadius: 20,
                     ),
@@ -226,7 +248,7 @@ class _onBoardingScreen extends State<OnboardingScreen> {
                 ),
               //page indicator containers.
               Positioned(
-                bottom: 30,
+                bottom: MediaQuery.of(context).padding.bottom + 17,
                 left: 0,
                 right: 0,
                 child: Row(
@@ -282,7 +304,7 @@ class _onBoardingScreen extends State<OnboardingScreen> {
                 ],
                 stops: const [0.0, 0.25, 0.65, 0.95],
               ),
-            ),  
+            ),
           ),
         BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
@@ -293,7 +315,7 @@ class _onBoardingScreen extends State<OnboardingScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Spacer(flex: 4),
+                  const Spacer(flex: 2),
                   AnimatedSwitcher(
                         duration: const Duration(milliseconds: 400),
                         child: Text(
@@ -344,7 +366,7 @@ class _onBoardingScreen extends State<OnboardingScreen> {
                           key: ValueKey(slides.description),
                           padding: const EdgeInsets.symmetric(horizontal: 8),
                           child: Text(
-                            slides.description,
+                            slides.description ?? "",
                             style: GoogleFonts.poppins(
                               fontSize: 15,
                               fontWeight: FontWeight.w400,
@@ -360,7 +382,6 @@ class _onBoardingScreen extends State<OnboardingScreen> {
                       .fadeIn(duration: 700.ms, curve: Curves.easeOut)
                       .slideY(begin: 0.1, end: 0, duration: 800.ms),
                   const Spacer(flex: 2),
-                  Spacer(flex: 2),
                 ],
               ),
             ),
