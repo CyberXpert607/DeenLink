@@ -1,13 +1,60 @@
 import 'package:deenlink/core/providers/auth_provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SplashScreen extends ConsumerWidget {
+class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends ConsumerState<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _navigateAfterDelay();
+  }
+
+  Future<void> _navigateAfterDelay() async {
+    await Future.delayed(const Duration(seconds: 2));
+
+    if (!mounted) return;
+
+    try {
+      final destination = await ref
+          .watch(appStartDestinationProvider.future)
+          .timeout(
+            const Duration(seconds: 5),
+            onTimeout: () {
+              return AppDestination.login;
+            },
+          );
+
+      if (!mounted) return;
+
+      switch (destination) {
+        case AppDestination.onboarding:
+          context.go('/onboarding');
+          break;
+        case AppDestination.login:
+          context.go('/login');
+          break;
+        case AppDestination.home:
+          context.go('/');
+          break;
+      }
+    } catch (e) {
+      if (mounted) {
+        context.go('/login');
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     ref.watch(appStartDestinationProvider);
 
     return Scaffold(
@@ -38,7 +85,7 @@ class SplashScreen extends ConsumerWidget {
                     ),
                     child: ClipOval(
                       child: Image.asset(
-                        "assets/images/logo.jpg",
+                        "assets/images/deenlink.png",
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
                           return Container(

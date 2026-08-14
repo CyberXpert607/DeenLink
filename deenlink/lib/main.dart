@@ -1,9 +1,8 @@
 import 'package:deenlink/core/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-//import 'package:flutter_ios_preview/flutter_ios_preview.dart';
+import 'package:flutter_ios_preview/flutter_ios_preview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shimmer/main.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,12 +12,11 @@ void main() {
     DeviceOrientation.portraitDown,
   ]);
   runApp(
-    /* const IosPreview(
+    const IosPreview(
       deviceModel: DeviceModel.iPhone16ProMax,
       enableInspector: false,
-      child: ProviderScope(child: MyApp()),
-    ),*/
-    const ProviderScope(child: MyApp()),
+      child: ProviderScope(child: MainApp()),
+    ),
   );
 }
 
@@ -30,7 +28,7 @@ class MainApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
 
     return MaterialApp.router(
-      
+      routerConfig: router,
       title: "DeenLink",
       theme: ThemeData(
         brightness: Brightness.light,

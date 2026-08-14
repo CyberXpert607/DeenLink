@@ -109,7 +109,8 @@ final currentUserProvider = Provider<User?>((ref) {
 });
 
 final appStartDestinationProvider = FutureProvider<AppDestination>((ref) async {
-  final hasSeen = await OnboardingService.hasSeen();
+  final onboardingService = OnboardingService();
+  final hasSeen = await onboardingService.hasSeenOnboarding();
   if (!hasSeen) return AppDestination.onboarding;
 
   try {

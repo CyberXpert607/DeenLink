@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/auth_provider.dart';
-import '../features/auth/view/pages/LoginScreen.dart';
+import '../features/auth/view/pages/loginScreen.dart';
 import '../features/auth/view/pages/SignUp.dart';
 import '../features/home/homepage.dart';
 import '../features/splashScreen/SplashScreen.dart';
@@ -49,7 +49,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/register',
         builder: (context, state) => const RegisterScreen(),
       ),
-      GoRoute(path: '/', builder: (context, state) => const HomePage()),
+      GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
     ],
   );
 });
